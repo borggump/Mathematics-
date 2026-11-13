@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yang–Mills Existence: The Mathematics Behind the AI Proof</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+  :root{
+    --bg:#fbfaf7; --fg:#1d1d1f; --muted:#5f6368; --card:#ffffff; --line:#d9d6cf;
+    --accent:#2f5d8a; --good:#2e7d4f; --warn:#b4542d; --soft:#eef3f8; --softgood:#e9f5ee; --softwarn:#fbeee7;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#141518; --fg:#e8e6e1; --muted:#a3a7ad; --card:#1d1f23; --line:#3a3d43;
+      --accent:#7fb0e0; --good:#6cc596; --warn:#ef9a73; --soft:#1f2a36; --softgood:#1d2e25; --softwarn:#33241d;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:17px/1.62 Charter,"Iowan Old Style",Georgia,serif;}
+  main{max-width:820px;margin:0 auto;padding:28px 20px 80px}
+  h1{font:700 1.85rem/1.2 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;margin:.2em 0 .3em;letter-spacing:-.01em}
+  h2{font:700 1.3rem/1.3 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;margin:2.2em 0 .5em;
+     padding-top:.6em;border-top:1px solid var(--line)}
+  h3{font:600 1.05rem/1.3 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;margin:1.6em 0 .3em}
+  .lede{color:var(--muted);font-size:1.05rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:18px 0}
+  .box{border-radius:10px;padding:12px 14px;margin:16px 0}
+  .def{background:var(--soft);border-left:4px solid var(--accent)}
+  .ok{background:var(--softgood);border-left:4px solid var(--good)}
+  .open{background:var(--softwarn);border-left:4px solid var(--warn)}
+  .label{font:700 .75rem/1 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;text-transform:uppercase;
+     letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px}
+  figure{margin:22px 0}
+  figcaption{font:.85rem/1.45 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;color:var(--muted);margin-top:8px}
+  svg{width:100%;height:auto;display:block}
+  svg text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--fg)}
+  .s-line{stroke:var(--fg);fill:none}
+  .s-muted{stroke:var(--muted);fill:none}
+  .s-acc{stroke:var(--accent);fill:none}
+  .f-card{fill:var(--card);stroke:var(--line)}
+  .f-soft{fill:var(--soft);stroke:var(--accent)}
+  .f-good{fill:var(--softgood);stroke:var(--good)}
+  .f-warn{fill:var(--softwarn);stroke:var(--warn)}
+  .t-muted{fill:var(--muted)!important}
+  .t-acc{fill:var(--accent)!important}
+  .t-good{fill:var(--good)!important}
+  .t-warn{fill:var(--warn)!important}
+  table{border-collapse:collapse;width:100%;font-size:.92rem;margin:14px 0}
+  th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+  th{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0}
+  .toc{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;font-size:.92rem}
+  .toc ol{margin:.3em 0 0 1.1em;padding:0}
+  a{color:var(--accent)}
+  .small{font-size:.88rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Yang–Mills Existence, Explained Mathematically</h1>
+<p class="lede">What OpenAI's AI-generated proof claims, the mathematics it builds on, and why the "mass gap", the harder half of the Millennium Prize problem, is still open. Written November 12, 2026.</p>
+
+<div class="card toc">
+<strong>Contents</strong>
+<ol>
+<li><a href="#tldr">Summary</a></li>
+<li><a href="#classical">Classical Yang–Mills theory</a></li>
+<li><a href="#quantum">Why quantising it is hard</a></li>
+<li><a href="#clay">The Clay problem: two parts</a></li>
+<li><a href="#axioms">What "exists" means: the Osterwalder–Schrader axioms</a></li>
+<li><a href="#lattice">Step 1: put it on a lattice</a></li>
+<li><a href="#rg">Step 2: Balaban's renormalisation group</a></li>
+<li><a href="#limit">Step 3: the continuum and infinite-volume limits</a></li>
+<li><a href="#gap">Why the mass gap is much harder</a></li>
+<li><a href="#lean">What the Lean check does and doesn't show</a></li>
+<li><a href="#status">Scorecard</a></li>
+</ol>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="tldr">1. Summary</h2>
+
+<p>Yang–Mills theory is the mathematical framework behind the strong and weak nuclear forces. Physicists have used it for decades to make extremely accurate predictions, but nobody had ever proved that the <em>quantum</em> version exists as a rigorous mathematical object in our four-dimensional spacetime. The Clay Mathematics Institute's Millennium Prize problem asks for two things:</p>
+
+<figure>
+<svg viewBox="0 0 760 300" role="img" aria-label="The two parts of the Yang-Mills Millennium problem">
+  <rect x="230" y="14" width="300" height="62" rx="10" class="f-soft"/>
+  <text x="380" y="40" text-anchor="middle" font-size="17" font-weight="700">Clay Millennium Problem</text>
+  <text x="380" y="62" text-anchor="middle" font-size="13" class="t-muted">"Yang–Mills existence and mass gap"</text>
+  <path d="M330 76 L190 128" class="s-muted" stroke-width="1.6"/>
+  <path d="M430 76 L570 128" class="s-muted" stroke-width="1.6"/>
+  <rect x="30" y="128" width="320" height="150" rx="10" class="f-good"/>
+  <text x="190" y="156" text-anchor="middle" font-size="16" font-weight="700">Part 1 · Existence</text>
+  <text x="190" y="182" text-anchor="middle" font-size="13">A quantum YM theory on ℝ⁴ satisfying</text>
+  <text x="190" y="200" text-anchor="middle" font-size="13">the axioms of quantum field theory,</text>
+  <text x="190" y="218" text-anchor="middle" font-size="13">for every compact simple gauge group G</text>
+  <text x="190" y="254" text-anchor="middle" font-size="14" font-weight="700" class="t-good">✓ AI proof affirmed by Gross panel</text>
+  <rect x="410" y="128" width="320" height="150" rx="10" class="f-warn"/>
+  <text x="570" y="156" text-anchor="middle" font-size="16" font-weight="700">Part 2 · Mass gap</text>
+  <text x="570" y="182" text-anchor="middle" font-size="13">The Hamiltonian's spectrum has a</text>
+  <text x="570" y="200" text-anchor="middle" font-size="13">gap: spec H ⊂ {0} ∪ [Δ, ∞), Δ &gt; 0</text>
+  <text x="570" y="218" text-anchor="middle" font-size="13">(lightest particle has positive mass)</text>
+  <text x="570" y="254" text-anchor="middle" font-size="14" font-weight="700" class="t-warn">✗ Open: not claimed</text>
+</svg>
+<figcaption>Figure 1. The prize requires both parts. The AI result covers Part 1 only, so the $1M prize is not in play.</figcaption>
+</figure>
+
+<p>OpenAI says its model produced a natural-language existence proof on September 9, 2026. The company then formalised it in the Lean proof assistant (about 1,147 pages). A five-person panel chaired by Nobel laureate David Gross reviewed it and reported on November 10 that it proves existence of pure Yang–Mills theory "according to the problem statements which are standard in physics and mathematics." According to reports, the construction is built on two older human-developed tools: <strong>Wilson's lattice gauge theory</strong> (1974) and <strong>Tadeusz Balaban's renormalisation-group programme</strong> (1980s). That's probably what the Economist means by "the key insights appear to have come from human physicists."</p>
+
+<!-- ============================================================ -->
+<h2 id="classical">2. Classical Yang–Mills theory</h2>
+
+<h3>The ingredients</h3>
+<p>Fix a <strong>compact simple Lie group</strong> $G$, such as $SU(2)$ or $SU(3)$; quantum chromodynamics uses $SU(3)$. Let $\mathfrak g$ be its Lie algebra, with generators $T^a$. The basic field is a <strong>connection</strong> (gauge potential), a $\mathfrak g$-valued 1-form on spacetime:</p>
+$$A = A_\mu(x)\,dx^\mu = A^a_\mu(x)\,T^a\,dx^\mu .$$
+<p>Electromagnetism is the special case $G=U(1)$, where $A_\mu$ is the ordinary vector potential.</p>
+
+<h3>Covariant derivative and curvature</h3>
+<p>The covariant derivative and the field strength (curvature) are</p>
+$$D_\mu = \partial_\mu + A_\mu, \qquad
+F_{\mu\nu} = [D_\mu,D_\nu] = \partial_\mu A_\nu - \partial_\nu A_\mu + [A_\mu, A_\nu].$$
+<p>In form language, $F = dA + A\wedge A$. The commutator term $[A_\mu,A_\nu]$ is the whole story: it vanishes for $U(1)$ (photons don't interact with each other) but not for non-abelian $G$ (gluons do interact with each other).</p>
+
+<h3>Gauge symmetry</h3>
+<p>For any map $U:\mathbb R^4\to G$, the transformation</p>
+$$A \;\mapsto\; U A U^{-1} + U\,d(U^{-1}), \qquad F \;\mapsto\; U F U^{-1}$$
+<p>leaves all physics unchanged. Physical quantities must therefore be <strong>gauge-invariant</strong>, such as $\operatorname{tr} F_{\mu\nu}F^{\mu\nu}$ or the Wilson loop</p>
+$$W_C(A) = \operatorname{tr}\, \mathcal P \exp\!\Big(\oint_C A\Big),$$
+<p>the holonomy (parallel transport) around a closed curve $C$.</p>
+
+<h3>Action and field equations</h3>
+<p>In Euclidean signature (imaginary time, which is the setting used for rigorous constructions), the Yang–Mills action is</p>
+$$S_{\text{YM}}(A) = \frac{1}{4g^2}\int_{\mathbb R^4} \sum_{\mu,\nu} \big|F_{\mu\nu}(x)\big|^2\, d^4x
+= -\frac{1}{2g^2}\int \operatorname{tr}\,(F\wedge \star F),$$
+<p>where $g$ is the coupling constant. Minimising it gives the Yang–Mills equations $D^\mu F_{\mu\nu}=0$. These are <em>nonlinear</em>. Expanding $|F|^2$ produces cubic terms $\sim g\,\partial A\,A A$ and quartic terms $\sim g^2 A^4$, which are the gluon self-interactions.</p>
+
+<!-- ============================================================ -->
+<h2 id="quantum">3. Why quantising it is hard</h2>
+
+<p>Quantum field theory, in its Euclidean form, is formally defined by the "path integral"</p>
+$$\langle \mathcal O\rangle = \frac{1}{Z}\int \mathcal O(A)\, e^{-S_{\text{YM}}(A)}\,\mathcal DA, \qquad Z = \int e^{-S_{\text{YM}}(A)}\,\mathcal DA.$$
+<p>As written, this is not mathematics. Three separate problems arise:</p>
+<ol>
+<li><strong>No Lebesgue measure on infinite-dimensional spaces.</strong> "$\mathcal DA$" does not exist. One must instead construct a probability measure on (generalised) gauge fields directly. Typical fields are so rough that they are distributions, not functions, so even $F^2$ is ill-defined pointwise.</li>
+<li><strong>Gauge redundancy.</strong> Integrating over all $A$ counts each physical configuration infinitely often (once per gauge transformation). This must be handled on the quotient space $\mathcal A/\mathcal G$.</li>
+<li><strong>Ultraviolet divergences.</strong> Perturbation theory gives infinite answers that must be renormalised. In 4D the coupling $g$ is <em>dimensionless</em>, which makes this the critical, hardest case.</li>
+</ol>
+
+<h3>Dimension counting: why 4 is the hard case</h3>
+<table>
+<tr><th>Model</th><th>Dimension</th><th>Status</th></tr>
+<tr><td>$\phi^4$ scalar theory</td><td>2, 3</td><td>Constructed rigorously (Glimm, Jaffe and others, 1970s). "Superrenormalisable": only finitely many divergences.</td></tr>
+<tr><td>$\phi^4$ scalar theory</td><td>4</td><td>Proved <em>trivial</em> (no interaction survives the continuum limit): Aizenman & Duminil-Copin, 2021.</td></tr>
+<tr><td>Yang–Mills</td><td>2, 3</td><td>Largely understood or constructed (2D exactly solvable; 3D partial).</td></tr>
+<tr><td>Yang–Mills</td><td>4</td><td>Nontrivial theory expected, thanks to asymptotic freedom. Existence now claimed via the AI proof.</td></tr>
+</table>
+
+<h3>Asymptotic freedom: what makes 4D Yang–Mills hopeful</h3>
+<p>Under renormalisation, the coupling "runs" with the energy scale $\mu$. To leading order the beta function is</p>
+$$\mu\frac{dg}{d\mu} = \beta(g) = -\frac{b_0}{16\pi^2}\,g^3 + O(g^5),\qquad b_0=\frac{11}{3}N \text{ for } SU(N).$$
+<p>The minus sign (Gross–Wilczek–Politzer, 1973; Nobel Prize 2004, which is the same David Gross who chaired the review panel) means that solving gives</p>
+$$g^2(\mu) \approx \frac{16\pi^2}{b_0\,\ln(\mu^2/\Lambda^2)} \;\xrightarrow{\;\mu\to\infty\;}\; 0.$$
+
+<figure>
+<svg viewBox="0 0 760 330" role="img" aria-label="Running coupling: weak at high energy, strong at low energy">
+  <line x1="80" y1="270" x2="720" y2="270" class="s-line" stroke-width="1.5"/>
+  <line x1="80" y1="270" x2="80" y2="30" class="s-line" stroke-width="1.5"/>
+  <text x="720" y="298" text-anchor="end" font-size="13">energy scale μ (log) →   ← distance</text>
+  <text x="40" y="150" font-size="14" transform="rotate(-90 40 150)" text-anchor="middle">coupling g²(μ)</text>
+  <rect x="80" y="30" width="170" height="240" fill="var(--warn)" opacity="0.10"/>
+  <rect x="520" y="30" width="200" height="240" fill="var(--good)" opacity="0.10"/>
+  <path d="M135 40 C 160 150, 200 200, 260 222 S 450 252, 710 260" class="s-acc" stroke-width="3"/>
+  <line x1="120" y1="270" x2="120" y2="276" class="s-line"/>
+  <text x="120" y="292" text-anchor="middle" font-size="13" class="t-muted">Λ</text>
+  <text x="165" y="60" font-size="13" font-weight="700" class="t-warn">Strong coupling</text>
+  <text x="165" y="78" font-size="12" class="t-muted">long distances</text>
+  <text x="165" y="94" font-size="12" class="t-muted">confinement, mass gap</text>
+  <text x="165" y="110" font-size="12" class="t-muted">→ non-perturbative, OPEN</text>
+  <text x="530" y="150" font-size="13" font-weight="700" class="t-good">Weak coupling</text>
+  <text x="530" y="168" font-size="12" class="t-muted">short distances</text>
+  <text x="530" y="184" font-size="12" class="t-muted">perturbation theory works</text>
+  <text x="530" y="200" font-size="12" class="t-muted">→ controls UV, existence</text>
+</svg>
+<figcaption>Figure 2. Asymptotic freedom. At short distances the theory is nearly free, which is what makes the ultraviolet (continuum) limit controllable and existence provable. At long distances the coupling grows and perturbation theory fails. That regime is where the mass gap lives.</figcaption>
+</figure>
+
+<!-- ============================================================ -->
+<h2 id="clay">4. The Clay problem: two parts</h2>
+<div class="box def"><span class="label">Clay statement (Jaffe–Witten, 2000), paraphrased</span>
+Prove that for any compact simple gauge group $G$, a non-trivial quantum Yang–Mills theory exists on $\mathbb R^4$ and has a mass gap $\Delta>0$. "Exists" means satisfying axioms at least as strong as those of Wightman or Osterwalder–Schrader.
+</div>
+
+<h3>The mass gap, precisely</h3>
+<p>A quantum field theory comes with a Hilbert space $\mathcal H$, a vacuum vector $\Omega$, and a Hamiltonian $H\ge 0$ with $H\Omega=0$. The theory has a <strong>mass gap</strong> $\Delta>0$ if</p>
+$$\operatorname{spec}(H) \subset \{0\}\,\cup\,[\Delta,\infty).$$
+<p>Equivalently, in Euclidean language, connected correlations of gauge-invariant local observables decay exponentially:</p>
+$$\big|\langle \mathcal O(x)\,\mathcal O(0)\rangle - \langle \mathcal O\rangle^2\big| \;\le\; C\,e^{-\Delta |x|}.$$
+
+<figure>
+<svg viewBox="0 0 760 250" role="img" aria-label="Energy spectrum with and without a mass gap">
+  <text x="30" y="40" font-size="14" font-weight="700">No gap</text>
+  <text x="30" y="58" font-size="12" class="t-muted">e.g. free photons</text>
+  <line x1="150" y1="50" x2="720" y2="50" class="s-line" stroke-width="1.3"/>
+  <circle cx="160" cy="50" r="6" fill="var(--accent)"/>
+  <rect x="160" y="44" width="560" height="12" fill="var(--accent)" opacity="0.35"/>
+  <text x="160" y="80" text-anchor="middle" font-size="12">0 (vacuum)</text>
+  <text x="440" y="80" text-anchor="middle" font-size="12" class="t-muted">continuous spectrum starts at 0: massless particles, long-range force</text>
+
+  <text x="30" y="160" font-size="14" font-weight="700">Mass gap</text>
+  <text x="30" y="178" font-size="12" class="t-muted">expected for YM</text>
+  <line x1="150" y1="170" x2="720" y2="170" class="s-line" stroke-width="1.3"/>
+  <circle cx="160" cy="170" r="6" fill="var(--accent)"/>
+  <rect x="330" y="164" width="390" height="12" fill="var(--warn)" opacity="0.45"/>
+  <line x1="330" y1="150" x2="330" y2="190" class="s-line" stroke-dasharray="4 3"/>
+  <path d="M165 140 L325 140" class="s-line" marker-end="url(#ar)" marker-start="url(#al)"/>
+  <text x="245" y="132" text-anchor="middle" font-size="14" font-weight="700" class="t-warn">Δ &gt; 0</text>
+  <text x="160" y="205" text-anchor="middle" font-size="12">0</text>
+  <text x="330" y="205" text-anchor="middle" font-size="12">Δ (lightest "glueball")</text>
+  <text x="525" y="205" text-anchor="middle" font-size="12" class="t-muted">all other energies ≥ Δ</text>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="var(--fg)"/></marker>
+    <marker id="al" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10 0 L0 5 L10 10z" fill="var(--fg)"/></marker>
+  </defs>
+</svg>
+<figcaption>Figure 3. Classically, Yang–Mills waves are massless like light. The quantum theory is expected to generate a mass scale out of nothing ("dimensional transmutation", $\Delta\propto\Lambda$), which explains why the strong force is short-ranged. Proving this is Part 2.</figcaption>
+</figure>
+
+<!-- ============================================================ -->
+<h2 id="axioms">5. What "exists" means: the Osterwalder–Schrader axioms</h2>
+<p>Existence means constructing a family of Euclidean correlation functions (Schwinger functions) $S_n(x_1,\dots,x_n)=\langle \mathcal O_1(x_1)\cdots\mathcal O_n(x_n)\rangle$ of gauge-invariant observables that satisfy:</p>
+<table>
+<tr><th>Axiom</th><th>Content</th></tr>
+<tr><td>OS0 Regularity</td><td>$S_n$ are tempered distributions with suitable growth bounds.</td></tr>
+<tr><td>OS1 Euclidean invariance</td><td>Invariant under rotations and translations of $\mathbb R^4$: $S_n(Rx_i + a) = S_n(x_i)$.</td></tr>
+<tr><td>OS2 Reflection positivity</td><td>For time reflection $\Theta$ and observables $F$ supported at positive time: $\langle \overline{\Theta F}\,F\rangle \ge 0$. This is the key property, because it produces a positive inner product.</td></tr>
+<tr><td>OS3 Symmetry</td><td>$S_n$ is symmetric under permuting its arguments.</td></tr>
+<tr><td>OS4 Clustering</td><td>Correlations factorise at large separation (a unique vacuum).</td></tr>
+</table>
+<div class="box def"><span class="label">Osterwalder–Schrader reconstruction theorem (1973–75)</span>
+If OS0–OS4 hold, there is a Hilbert space $\mathcal H$, a vacuum $\Omega$, a self-adjoint Hamiltonian $H\ge0$ and a unitary representation of the Poincaré group, giving a relativistic quantum theory satisfying the Wightman axioms. "Rotating back" from imaginary to real time is automatic.
+</div>
+<p>"Non-trivial" adds the requirement that the theory not be Gaussian (free). Its correlations must show genuine interaction, for example nonzero connected 4-point functions.</p>
+
+<!-- ============================================================ -->
+<h2 id="lattice">6. Step 1: put it on a lattice (Wilson, 1974)</h2>
+<p>Replace $\mathbb R^4$ by a finite periodic lattice $\Lambda_{\varepsilon,L} = (\varepsilon\mathbb Z/L\mathbb Z)^4$ with spacing $\varepsilon$. Instead of the potential $A_\mu(x)$, put a group element on each <strong>link</strong>:</p>
+$$U_{x,\mu} \approx \exp\big(\varepsilon A_\mu(x)\big) \in G .$$
+<p>The parallel transport around a unit square (a <strong>plaquette</strong>) $p$ is</p>
+$$U_p = U_{x,\mu}\,U_{x+\varepsilon\hat\mu,\nu}\,U_{x+\varepsilon\hat\nu,\mu}^{-1}\,U_{x,\nu}^{-1} \;\approx\; \exp\big(\varepsilon^2 F_{\mu\nu}(x) + O(\varepsilon^3)\big).$$
+
+<figure>
+<svg viewBox="0 0 760 330" role="img" aria-label="Lattice with link variables and a plaquette">
+  <g class="s-muted" stroke-width="1">
+    <line x1="40" y1="60" x2="380" y2="60"/><line x1="40" y1="130" x2="380" y2="130"/>
+    <line x1="40" y1="200" x2="380" y2="200"/><line x1="40" y1="270" x2="380" y2="270"/>
+    <line x1="60" y1="40" x2="60" y2="290"/><line x1="140" y1="40" x2="140" y2="290"/>
+    <line x1="220" y1="40" x2="220" y2="290"/><line x1="300" y1="40" x2="300" y2="290"/>
+  </g>
+  <rect x="140" y="130" width="80" height="70" fill="var(--accent)" opacity="0.15"/>
+  <g stroke-width="3.5" class="s-acc">
+    <line x1="140" y1="200" x2="214" y2="200" marker-end="url(#ac)"/>
+    <line x1="220" y1="200" x2="220" y2="136" marker-end="url(#ac)"/>
+    <line x1="220" y1="130" x2="146" y2="130" marker-end="url(#ac)"/>
+    <line x1="140" y1="130" x2="140" y2="194" marker-end="url(#ac)"/>
+  </g>
+  <defs><marker id="ac" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="var(--accent)"/></marker></defs>
+  <g fill="var(--fg)">
+    <circle cx="140" cy="200" r="4"/><circle cx="220" cy="200" r="4"/><circle cx="220" cy="130" r="4"/><circle cx="140" cy="130" r="4"/>
+  </g>
+  <text x="180" y="222" text-anchor="middle" font-size="13">U<tspan baseline-shift="sub" font-size="10">x,μ</tspan></text>
+  <text x="246" y="170" font-size="13">U<tspan baseline-shift="sub" font-size="10">x+μ,ν</tspan></text>
+  <text x="180" y="120" text-anchor="middle" font-size="13">U⁻¹</text>
+  <text x="104" y="170" font-size="13">U⁻¹</text>
+  <text x="180" y="170" text-anchor="middle" font-size="14" font-weight="700" class="t-acc">U<tspan baseline-shift="sub" font-size="10">p</tspan></text>
+  <text x="132" y="218" font-size="12" text-anchor="end">x</text>
+  <path d="M60 310 L140 310" class="s-line" marker-end="url(#ar2)" marker-start="url(#al2)"/>
+  <text x="100" y="326" text-anchor="middle" font-size="12">ε</text>
+  <defs>
+    <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="var(--fg)"/></marker>
+    <marker id="al2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10z" fill="var(--fg)"/></marker>
+  </defs>
+  <text x="420" y="70" font-size="14" font-weight="700">Why this works</text>
+  <text x="420" y="98" font-size="13">• Fields are group elements on links:</text>
+  <text x="434" y="116" font-size="13">a compact space, so integrals are finite</text>
+  <text x="420" y="144" font-size="13">• Gauge symmetry is exact on the lattice:</text>
+  <text x="434" y="162" font-size="13">U<tspan baseline-shift="sub" font-size="9">x,μ</tspan> → V<tspan baseline-shift="sub" font-size="9">x</tspan> U<tspan baseline-shift="sub" font-size="9">x,μ</tspan> V⁻¹<tspan baseline-shift="sub" font-size="9">x+μ</tspan></text>
+  <text x="420" y="190" font-size="13">• tr U<tspan baseline-shift="sub" font-size="9">p</tspan> is gauge-invariant (a tiny Wilson loop)</text>
+  <text x="420" y="218" font-size="13">• Reflection positivity holds</text>
+  <text x="434" y="236" font-size="13">(Osterwalder–Seiler, 1978)</text>
+  <text x="420" y="264" font-size="13">• Price paid: rotation invariance is</text>
+  <text x="434" y="282" font-size="13">broken; it must be recovered as ε → 0</text>
+</svg>
+<figcaption>Figure 4. Wilson's lattice regularisation. The curvature becomes the holonomy around each elementary square.</figcaption>
+</figure>
+
+<p>The <strong>Wilson action</strong> and the lattice measure are</p>
+$$S_\varepsilon(U) = \frac{1}{g^2}\sum_{p}\operatorname{Re}\operatorname{tr}\big(\mathbf 1 - U_p\big),\qquad
+d\mu_\varepsilon(U) = \frac{1}{Z_\varepsilon}\,e^{-S_\varepsilon(U)}\prod_{\text{links}} dU_{x,\mu},$$
+<p>where $dU$ is normalised Haar measure on $G$. This is a perfectly well-defined probability measure on a finite product of compact groups. Using $U_p\approx e^{\varepsilon^2F}$ and $\operatorname{Re}\operatorname{tr}(\mathbf 1-e^{X})\approx -\tfrac12\operatorname{tr}X^2$, one checks that $S_\varepsilon \to S_{\text{YM}}$ formally as $\varepsilon\to0$. The entire difficulty is making that limit rigorous for the <em>measures</em>, not just the actions.</p>
+
+<!-- ============================================================ -->
+<h2 id="rg">7. Step 2: Balaban's renormalisation group</h2>
+<p>As $\varepsilon\to0$ the number of variables explodes and naive estimates blow up. The solution, following Wilson's renormalisation-group (RG) idea made rigorous by Balaban, is to integrate out fluctuations <strong>one length scale at a time</strong>.</p>
+
+<figure>
+<svg viewBox="0 0 760 270" role="img" aria-label="Renormalisation group block-spin steps">
+  <g>
+    <rect x="20" y="40" width="150" height="150" class="f-card"/>
+    <g class="s-muted" stroke-width="0.7">
+      <line x1="38.75" y1="40" x2="38.75" y2="190"/><line x1="57.5" y1="40" x2="57.5" y2="190"/><line x1="76.25" y1="40" x2="76.25" y2="190"/><line x1="95" y1="40" x2="95" y2="190"/><line x1="113.75" y1="40" x2="113.75" y2="190"/><line x1="132.5" y1="40" x2="132.5" y2="190"/><line x1="151.25" y1="40" x2="151.25" y2="190"/>
+      <line x1="20" y1="58.75" x2="170" y2="58.75"/><line x1="20" y1="77.5" x2="170" y2="77.5"/><line x1="20" y1="96.25" x2="170" y2="96.25"/><line x1="20" y1="115" x2="170" y2="115"/><line x1="20" y1="133.75" x2="170" y2="133.75"/><line x1="20" y1="152.5" x2="170" y2="152.5"/><line x1="20" y1="171.25" x2="170" y2="171.25"/>
+    </g>
+    <text x="95" y="215" text-anchor="middle" font-size="13">spacing ε</text>
+    <text x="95" y="233" text-anchor="middle" font-size="12" class="t-muted">action S₀</text>
+  </g>
+  <path d="M180 115 L232 115" class="s-acc" stroke-width="2.5" marker-end="url(#ac2)"/>
+  <text x="206" y="104" text-anchor="middle" font-size="11" class="t-acc">block</text>
+  <g>
+    <rect x="240" y="40" width="150" height="150" class="f-card"/>
+    <g class="s-muted" stroke-width="1">
+      <line x1="277.5" y1="40" x2="277.5" y2="190"/><line x1="315" y1="40" x2="315" y2="190"/><line x1="352.5" y1="40" x2="352.5" y2="190"/>
+      <line x1="240" y1="77.5" x2="390" y2="77.5"/><line x1="240" y1="115" x2="390" y2="115"/><line x1="240" y1="152.5" x2="390" y2="152.5"/>
+    </g>
+    <text x="315" y="215" text-anchor="middle" font-size="13">spacing Lε</text>
+    <text x="315" y="233" text-anchor="middle" font-size="12" class="t-muted">effective action S₁</text>
+  </g>
+  <path d="M400 115 L452 115" class="s-acc" stroke-width="2.5" marker-end="url(#ac2)"/>
+  <text x="426" y="104" text-anchor="middle" font-size="11" class="t-acc">block</text>
+  <g>
+    <rect x="460" y="40" width="150" height="150" class="f-card"/>
+    <g class="s-muted" stroke-width="1.3">
+      <line x1="535" y1="40" x2="535" y2="190"/><line x1="460" y1="115" x2="610" y2="115"/>
+    </g>
+    <text x="535" y="215" text-anchor="middle" font-size="13">spacing L²ε</text>
+    <text x="535" y="233" text-anchor="middle" font-size="12" class="t-muted">effective action S₂</text>
+  </g>
+  <text x="640" y="120" font-size="22">⋯</text>
+  <text x="680" y="110" font-size="12" class="t-muted">until</text>
+  <text x="680" y="126" font-size="12" class="t-muted">scale</text>
+  <text x="680" y="142" font-size="12" class="t-muted">~ 1</text>
+  <defs><marker id="ac2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="var(--accent)"/></marker></defs>
+  <text x="380" y="262" text-anchor="middle" font-size="13">Each step: average fields over L⁴ blocks, integrate out short-scale fluctuations, and prove the new action stays "nice".</text>
+</svg>
+<figcaption>Figure 5. Multiscale renormalisation. With $n$ steps, $\varepsilon = L^{-n}$, so going to the continuum means controlling infinitely many steps with bounds uniform in $n$.</figcaption>
+</figure>
+
+<h3>The RG map</h3>
+<p>Given the action $S_k$ at scale $L^k\varepsilon$, define a coarse "block" field $V = \mathcal B(U)$ by averaging over blocks of side $L$, and set</p>
+$$e^{-S_{k+1}(V)} = \int \delta\big(V - \mathcal B(U)\big)\,e^{-S_k(U)}\,dU .$$
+<p>The aim is to show that each $S_k$ keeps the form "Wilson action with a renormalised coupling $g_k$, plus small, local corrections", with $g_k$ following the asymptotic-freedom flow $g_{k+1}^{-2}\approx g_k^{-2} + \tfrac{b_0}{8\pi^2}\ln L$.</p>
+
+<h3>Balaban's key technical ideas (1982–1989)</h3>
+<ul>
+<li><strong>Small-field / large-field split.</strong> Where the field is close to a pure gauge (curvature small), expand perturbatively around it. Where it is large, use the fact that such regions are exponentially suppressed by $e^{-S}$ with $g$ small.</li>
+<li><strong>Gauge fixing within blocks</strong> (axial-type gauges adapted to the block structure), avoiding the global Gribov ambiguities of gauge fixing.</li>
+<li><strong>Cluster / polymer expansions.</strong> These write the corrections as sums of local pieces with exponential decay, so that errors don't accumulate across the volume.</li>
+<li><strong>Main theorem (ultraviolet stability).</strong> On a finite torus, the partition function satisfies bounds uniform in the lattice spacing:
+$$e^{-C|\Lambda|}\;\le\;\frac{Z_\varepsilon}{Z_\varepsilon^{\text{free-ish}}}\;\le\;e^{C|\Lambda|}.$$</li>
+</ul>
+<div class="box open"><span class="label">The gap Balaban left</span>
+Balaban controlled the partition function (vacuum energy) in a finite box. He did <em>not</em> complete the construction of gauge-invariant correlation functions, their continuum limit, the infinite-volume limit, or verification of all the OS axioms. For roughly 35 years this was a famous unfinished programme. Reports describe the AI proof as building on exactly this framework and carrying it through.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="limit">8. Step 3: the continuum and infinite-volume limits</h2>
+
+<figure>
+<svg viewBox="0 0 760 420" role="img" aria-label="Pipeline of the existence construction">
+  <defs><marker id="ad" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="var(--muted)"/></marker></defs>
+  <rect x="200" y="10" width="360" height="54" rx="10" class="f-card"/>
+  <text x="380" y="33" text-anchor="middle" font-size="14" font-weight="700">Lattice measure μ<tspan baseline-shift="sub" font-size="10">ε,L</tspan></text>
+  <text x="380" y="52" text-anchor="middle" font-size="12" class="t-muted">Wilson action on finite torus; well-defined</text>
+  <path d="M380 64 L380 88" class="s-muted" stroke-width="1.6" marker-end="url(#ad)"/>
+  <rect x="200" y="92" width="360" height="54" rx="10" class="f-soft"/>
+  <text x="380" y="115" text-anchor="middle" font-size="14" font-weight="700">Uniform bounds via Balaban RG</text>
+  <text x="380" y="134" text-anchor="middle" font-size="12" class="t-muted">estimates on correlations independent of ε</text>
+  <path d="M380 146 L380 170" class="s-muted" stroke-width="1.6" marker-end="url(#ad)"/>
+  <rect x="200" y="174" width="360" height="54" rx="10" class="f-soft"/>
+  <text x="380" y="197" text-anchor="middle" font-size="14" font-weight="700">Continuum limit ε → 0</text>
+  <text x="380" y="216" text-anchor="middle" font-size="12" class="t-muted">compactness ⇒ convergent subsequence</text>
+  <path d="M380 228 L380 252" class="s-muted" stroke-width="1.6" marker-end="url(#ad)"/>
+  <rect x="200" y="256" width="360" height="54" rx="10" class="f-soft"/>
+  <text x="380" y="279" text-anchor="middle" font-size="14" font-weight="700">Infinite volume L → ∞</text>
+  <text x="380" y="298" text-anchor="middle" font-size="12" class="t-muted">limit exists along subsequences (uniqueness: not shown)</text>
+  <path d="M380 310 L380 334" class="s-muted" stroke-width="1.6" marker-end="url(#ad)"/>
+  <rect x="200" y="338" width="360" height="60" rx="10" class="f-good"/>
+  <text x="380" y="362" text-anchor="middle" font-size="14" font-weight="700">Verify OS axioms + non-triviality</text>
+  <text x="380" y="382" text-anchor="middle" font-size="12" class="t-muted">⇒ (OS reconstruction) Wightman QFT on ℝ⁴</text>
+  <rect x="580" y="174" width="168" height="136" rx="10" class="f-warn"/>
+  <text x="664" y="198" text-anchor="middle" font-size="13" font-weight="700">Hard points</text>
+  <text x="592" y="220" font-size="12">• rotation invariance</text>
+  <text x="604" y="236" font-size="12">must re-emerge</text>
+  <text x="592" y="256" font-size="12">• gauge-invariant</text>
+  <text x="604" y="272" font-size="12">observables only</text>
+  <text x="592" y="292" font-size="12">• strong-coupling IR</text>
+  <path d="M580 240 L562 240" class="s-muted" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <rect x="12" y="174" width="168" height="136" rx="10" class="f-card"/>
+  <text x="96" y="198" text-anchor="middle" font-size="13" font-weight="700">Human-built tools</text>
+  <text x="24" y="220" font-size="12">Wilson lattice (1974)</text>
+  <text x="24" y="240" font-size="12">Osterwalder–Schrader</text>
+  <text x="36" y="256" font-size="12">(1973–75)</text>
+  <text x="24" y="276" font-size="12">Balaban RG (1982–89)</text>
+  <text x="24" y="296" font-size="12">Asymptotic freedom ('73)</text>
+  <path d="M180 120 L198 120" class="s-muted" stroke-width="1.2" stroke-dasharray="3 3"/>
+</svg>
+<figcaption>Figure 6. The general architecture of a constructive existence proof, as described in reports on the AI result. The "uniqueness not shown" note reflects the committee's caveat that the construction allows refinement in the large-volume limit. Internal details of the 1,147-page proof aren't fully public yet, so treat this as the standard blueprint rather than a line-by-line summary.</figcaption>
+</figure>
+
+<h3>Compactness argument in a sentence</h3>
+<p>If the Schwinger functions $S_n^{(\varepsilon,L)}$ obey bounds uniform in $\varepsilon$ and $L$, then by a Prokhorov / Arzelà–Ascoli-type compactness theorem some subsequence $\varepsilon_j\to0,\ L_j\to\infty$ converges to limits $S_n$. Properties that are preserved under limits (reflection positivity, symmetry, translation invariance) pass to $S_n$ automatically. Others, notably <strong>full rotation invariance</strong> (the lattice only has 90° rotations) and <strong>non-triviality</strong>, need separate proofs. Different subsequences might in principle give different limits, which is why "uniqueness of the limit" is a separate, stronger statement.</p>
+
+<!-- ============================================================ -->
+<h2 id="gap">9. Why the mass gap is much harder</h2>
+<p>Existence is fundamentally an <strong>ultraviolet</strong> problem: control short distances, where asymptotic freedom makes the coupling small. The mass gap is an <strong>infrared</strong> problem: control long distances, where the coupling becomes large and no small parameter exists.</p>
+
+<ul>
+<li>Run the RG flow of Figure 5 toward large scales and $g_k$ <em>grows</em>. Balaban-style expansions need $g_k$ small, so they stop working near scale $\Lambda^{-1}$.</li>
+<li>At very strong lattice coupling ($g$ large), a mass gap <em>is</em> provable by convergent strong-coupling expansions (Osterwalder–Seiler). The open problem is to <strong>connect</strong> the weak-coupling regime (needed for the continuum) to the strong-coupling regime (where the gap is visible), with no phase transition in between.</li>
+<li>Closely related is <strong>confinement</strong>, the area law for large Wilson loops:
+$$\langle W_C\rangle \sim e^{-\sigma\,\mathrm{Area}(C)},\qquad \sigma>0,$$
+which says quarks are bound by a constant force ("string tension"). It is widely expected but unproved.</li>
+</ul>
+<p>The review committee's position is explicit: the construction supplies <em>no evidence for or against</em> a mass gap. Lattice computer simulations strongly suggest $\Delta>0$ (the lightest $SU(3)$ glueball has mass around 1.5–1.7 GeV), but simulations are not proofs.</p>
+
+<!-- ============================================================ -->
+<h2 id="lean">10. What the Lean check does and doesn't show</h2>
+<p><strong>Lean</strong> is a proof assistant: every logical step is checked mechanically against a small trusted kernel. A successful Lean check establishes</p>
+$$\vdash\;\; \texttt{FormalStatement}$$
+<p>with essentially no possibility of a hidden logical gap. What it can't establish is that <code>FormalStatement</code> means what humans mean by "quantum Yang–Mills theory exists." The definitions of the measure space, the gauge-invariant observables, the OS axioms and "non-trivial" all had to be written in Lean, and a subtly weak definition could make the theorem easier than the real problem. Reviewing those definitions was the committee's main job.</p>
+
+<div class="box open"><span class="label">Caveats on the review</span>
+<ul style="margin:.2em 0 0 1em;padding:0">
+<li>OpenAI chose the chair (Gross), who chose the other four members.</li>
+<li>Reviewers disclosed using OpenAI's own model to help digest the Lean code, and said they do not yet fully understand the proof.</li>
+<li>The Lean formalisation is public; the long natural-language write-up was reported as not yet released. Independent human understanding and journal-style refereeing are still to come.</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="status">11. Scorecard</h2>
+<table>
+<tr><th>Claim</th><th>Status (Nov 12, 2026)</th></tr>
+<tr><td>Lattice YM is well-defined, gauge-invariant and reflection-positive</td><td style="color:var(--good)">Classical result (1970s)</td></tr>
+<tr><td>UV stability of partition function on a torus</td><td style="color:var(--good)">Balaban (1980s)</td></tr>
+<tr><td>Existence of pure 4D quantum YM satisfying standard axioms</td><td style="color:var(--good)">AI proof, Lean-verified, affirmed by Gross panel</td></tr>
+<tr><td>Existence of QCD (YM + quarks)</td><td style="color:var(--muted)">Claimed by OpenAI; separate review status</td></tr>
+<tr><td>Uniqueness of the infinite-volume limit</td><td style="color:var(--warn)">Not shown</td></tr>
+<tr><td>Mass gap $\Delta&gt;0$</td><td style="color:var(--warn)">Open: the $1M Millennium Prize stands</td></tr>
+<tr><td>Confinement (area law)</td><td style="color:var(--warn)">Open</td></tr>
+</table>
+
+<p class="small">Sources: Scientific American (Nov 2026), "Scientists confirm OpenAI's blockbuster quantum physics result"; Startup Fortune, Kingy AI, The Century Report and OfficeChai coverage of the Gross committee assessment; Jaffe & Witten, official Clay problem description (2000). The background mathematics (Yang–Mills action, Wilson lattice, OS axioms, Balaban RG, asymptotic freedom) is standard textbook material. Details of the AI proof's internal structure beyond what's been reported are not asserted here.</p>
+
+</main>
+</body>
+</html>

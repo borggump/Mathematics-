@@ -1,0 +1,144 @@
+# bd_mumu_gui.py - run in Pydroid 3
+import math
+import tkinter as tk
+from tkinter import messagebox
+
+TOPICS = {
+    "Overview": (
+        "B_d -> mu+ mu- is a very rare decay of the B_d meson into two muons. "
+        "The Standard Model predicts a branching fraction of order 1e-10, so about "
+        "one decay per 10 billion B_d mesons. LHCb reported first evidence (3.2 sigma)."
+    ),
+    "B_d meson": (
+        "The B_d is a bound state of a bottom antiquark and a down quark, (b-bar d). "
+        "Mass about 5.28 GeV/c^2. Lifetime about 1.5 ps (1.5e-12 s)."
+    ),
+    "Flavour-changing neutral current": (
+        "The quark-level process b -> d mu+ mu- changes flavour without changing charge "
+        "via a neutral current. Z exchanges cannot change flavour at tree level, so the "
+        "leading diagram must be a loop (penguin or box)."
+    ),
+    "Loop suppression": (
+        "The top-quark and W-boson loop contributes a factor of alpha/(4 pi) or g^2/(16 pi^2), "
+        "which is a small number. This is one of three suppressions that make the decay rare."
+    ),
+    "CKM suppression": (
+        "The amplitude carries V_tb V_td*. With |V_td| about 8.6e-3, |V_tb V_td*|^2 is "
+        "about 7.4e-5."
+    ),
+    "Helicity suppression": (
+        "The B_d is spinless, so the muon pair must be produced with a helicity flip. "
+        "The rate is proportional to m_mu^2, giving a factor (m_mu/m_B)^2 of about 4e-4."
+    ),
+    "Branching fraction": (
+        "BR = Gamma(decay) / Gamma(total). Equivalently BR = Gamma(decay) x tau, "
+        "since tau = hbar / Gamma_total (natural units)."
+    ),
+    "Wilson coefficient C10": (
+        "C10 is computed from short-distance electroweak physics. New particles in the loop "
+        "would change it, so measuring the rate tests for new physics."
+    ),
+    "Decay constant f_B": (
+        "f_B encodes the quark-antiquark overlap inside the meson. It comes from lattice QCD "
+        "and is a main source of theory uncertainty."
+    ),
+    "Sigma (significance)": (
+        "Z = (x - mu0) / sigma. A one-sided p-value is 0.5 * erfc(Z / sqrt(2)). "
+        "3 sigma is conventionally 'evidence'; 5 sigma (p about 2.9e-7) is 'discovery'."
+    ),
+    "Measured vs SM ratio": (
+        "R = BR_measured / BR_SM. R far from 1 with good precision would signal new physics. "
+        "The LHCb result agrees with the Standard Model."
+    ),
+}
+
+
+def p_one_sided(z):
+    return 0.5 * math.erfc(z / math.sqrt(2))
+
+
+class App:
+    def __init__(self, root):
+        self.root = root
+        root.title("B_d -> mu mu Explainer")
+        root.geometry("420x780")
+        root.configure(bg="#1b1d22")
+
+        fg, bg, entry_bg = "#ecebe6", "#1b1d22", "#2a2d35"
+
+        tk.Label(root, text="Search or pick a topic", fg=fg, bg=bg,
+                 font=("Helvetica", 14, "bold")).pack(pady=(12, 4))
+
+        self.search_var = tk.StringVar()
+        self.search_var.trace_add("write", lambda *a: self.refresh_list())
+        tk.Entry(root, textvariable=self.search_var, bg=entry_bg, fg=fg,
+                 insertbackground=fg, font=("Helvetica", 13)).pack(fill="x", padx=12)
+
+        self.listbox = tk.Listbox(root, height=6, bg=entry_bg, fg=fg,
+                                  selectbackground="#1f5fa8", font=("Helvetica", 12),
+                                  activestyle="none", exportselection=False)
+        self.listbox.pack(fill="x", padx=12, pady=6)
+        self.listbox.bind("<<ListboxSelect>>", self.on_select)
+
+        tk.Label(root, text="Explanation", fg=fg, bg=bg,
+                 font=("Helvetica", 12, "bold")).pack(anchor="w", padx=12)
+        self.output = tk.Text(root, height=10, wrap="word", bg=entry_bg, fg=fg,
+                              font=("Helvetica", 12), relief="flat", padx=8, pady=8)
+        self.output.pack(fill="both", expand=True, padx=12, pady=(2, 10))
+
+        # Significance calculator
+        tk.Label(root, text="Significance calculator", fg=fg, bg=bg,
+                 font=("Helvetica", 12, "bold")).pack(anchor="w", padx=12)
+        row = tk.Frame(root, bg=bg)
+        row.pack(fill="x", padx=12, pady=4)
+        tk.Label(row, text="Z (sigma):", fg=fg, bg=bg, font=("Helvetica", 12)).pack(side="left")
+        self.z_entry = tk.Entry(row, width=8, bg=entry_bg, fg=fg,
+                                insertbackground=fg, font=("Helvetica", 12))
+        self.z_entry.insert(0, "3.2")
+        self.z_entry.pack(side="left", padx=8)
+        tk.Button(row, text="Compute", command=self.compute_p, bg="#1f5fa8", fg="white",
+                  font=("Helvetica", 12)).pack(side="left")
+        self.result = tk.Label(root, text="", fg=fg, bg=bg, font=("Helvetica", 12),
+                               justify="left", wraplength=380)
+        self.result.pack(anchor="w", padx=12, pady=(4, 12))
+
+        self.refresh_list()
+        self.show("Overview")
+
+    def refresh_list(self):
+        q = self.search_var.get().strip().lower()
+        self.listbox.delete(0, "end")
+        self.names = [n for n in TOPICS if q in n.lower() or q in TOPICS[n].lower()]
+        for n in self.names:
+            self.listbox.insert("end", n)
+
+    def on_select(self, _event):
+        sel = self.listbox.curselection()
+        if sel:
+            self.show(self.names[sel[0]])
+
+    def show(self, name):
+        self.output.config(state="normal")
+        self.output.delete("1.0", "end")
+        self.output.insert("1.0", f"{name}\n\n{TOPICS[name]}")
+        self.output.config(state="disabled")
+
+    def compute_p(self):
+        try:
+            z = float(self.z_entry.get())
+        except ValueError:
+            messagebox.showerror("Input error", "Enter a number, for example 3.2")
+            return
+        p = p_one_sided(z)
+        two = 2 * p
+        odds = f"about 1 in {1 / p:,.0f}" if p > 0 else "effectively zero"
+        verdict = ("discovery threshold reached" if z >= 5
+                   else "evidence level" if z >= 3 else "below evidence level")
+        self.result.config(text=(f"One-sided p = {p:.3g}  ({odds})\n"
+                                 f"Two-sided p = {two:.3g}\n{verdict}"))
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    App(root)
+    root.mainloop()

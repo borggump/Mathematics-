@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Room-Temperature Polariton Supersolid: The Math and the Picture</title>
+<style>
+  :root {
+    --bg: #fbfaf7; --fg: #1d1d1f; --muted: #6b6b70; --card: #ffffff;
+    --line: #e4e1da; --accent: #2b6cb0; --accent2: #c05621; --green: #2f855a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#16161a; --fg:#ecebe6; --muted:#9a9aa3; --card:#1f1f25; --line:#33333b; --accent:#63b3ed; --accent2:#f6ad55; --green:#68d391; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family: Georgia, "Times New Roman", serif; line-height:1.6; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 1.9rem; margin-bottom: 4px; }
+  h2 { font-size: 1.35rem; margin-top: 48px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  h3 { font-size: 1.05rem; margin-top: 28px; }
+  .sub { color: var(--muted); font-style: italic; margin-top: 0; }
+  p, li { font-size: 1rem; }
+  .eq { font-family: "Cambria Math", "Latin Modern Math", "STIX Two Math", "Times New Roman", serif; background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 6px; padding: 12px 16px; margin: 14px 0; overflow-x: auto; font-size: 1.05rem; }
+  .eq .label { float: right; color: var(--muted); font-size: .85rem; font-family: system-ui, sans-serif; }
+  .note { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; font-size: .95rem; color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 18px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } }
+  canvas { width: 100%; height: auto; display: block; background: var(--card); border-radius: 6px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-family: system-ui, sans-serif; font-size: .9rem; }
+  .controls label { display: flex; flex-direction: column; min-width: 180px; flex: 1; }
+  .controls input[type=range] { width: 100%; }
+  .cap { font-family: system-ui, sans-serif; font-size: .85rem; color: var(--muted); margin-top: 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; margin: 12px 0; }
+  th, td { border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-weight: normal; font-family: system-ui, sans-serif; font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
+  .tag { display:inline-block; font-family: system-ui, sans-serif; font-size:.75rem; padding:2px 8px; border-radius: 99px; background: var(--line); color: var(--fg); margin-right:6px; }
+  code, .mono { font-family: ui-monospace, Menlo, monospace; font-size: .9em; }
+  .flow { font-family: system-ui, sans-serif; display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:14px 0; }
+  .flow .box { background: var(--card); border:1px solid var(--line); border-radius:6px; padding:8px 10px; font-size:.88rem; }
+  .flow .arrow { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Room-Temperature Polariton Supersolid</h1>
+<p class="sub">The mathematics behind the University of Warsaw result, with interactive diagrams</p>
+
+<p>The article describes a <em>supersolid</em>: a state of matter that is simultaneously a <strong>superfluid</strong> (flows with zero viscosity) and a <strong>crystal-like density wave</strong> (its density repeats periodically in space). Achieving this with light-matter hybrid particles at about 60&nbsp;°C is the key result. Below, each piece is built up from first principles, then the experimental signatures are derived from the same equations.</p>
+
+<div class="flow">
+  <div class="box">Light + excitons in a microcavity</div><span class="arrow">→</span>
+  <div class="box">Exciton polaritons</div><span class="arrow">→</span>
+  <div class="box">Bose-Einstein condensate ψ(r,t)</div><span class="arrow">→</span>
+  <div class="box">Superfluid flow (phase gradient)</div><span class="arrow">+</span>
+  <div class="box">Density modulation</div><span class="arrow">→</span>
+  <div class="box">Supersolid</div>
+</div>
+
+<h2>1. Exciton polaritons: the particles</h2>
+
+<p>An exciton is a bound electron-hole pair in a semiconductor. When it is strongly coupled to a photon trapped in a microcavity (two mirrors a fraction of a micron apart), the eigenstates are mixtures of light and matter. These are <em>polaritons</em>, with a lower-branch dispersion that is approximately</p>
+
+<div class="eq">
+  E<sub>LP</sub>(k) ≈ E<sub>x</sub> + ħ²k² / (2m<sup>*</sup>), &nbsp;&nbsp; m<sup>*</sup> ≈ 10<sup>−5</sup>–10<sup>−4</sup> m<sub>e</sub>
+  <span class="label">(1)</span>
+</div>
+
+<p>The effective mass <em>m*</em> is tiny because the particle is mostly photon. Two consequences follow. First, the condensation temperature scales as <em>T<sub>c</sub></em> ∝ n/m*, so a light mass lets condensation happen far above the nanokelvin regime needed for cold atoms. Second, the particle is lossy. Its lifetime is set by the cavity and exciton decay rate γ, and the article notes it is only a few picoseconds.</p>
+
+<div class="card">
+  <strong>Scale check.</strong> The article's 60&nbsp;°C is T = 333 K, so k<sub>B</sub>T ≈ 8.617×10<sup>−5</sup> eV/K × 333 K ≈ 28.7 meV. For a 1 ps lifetime, the energy linewidth is ħ/τ = (6.58×10<sup>−16</sup> eV·s)/(10<sup>−12</sup> s) ≈ 0.66 meV, so the thermal energy is roughly 40 times the linewidth. The condensate is therefore only possible because the mass and density conditions make the coherent state dominate.
+</div>
+
+<h2>2. The order parameter and the driven-dissipative Gross-Pitaevskii equation</h2>
+
+<p>A condensate of many bosons is described by one complex macroscopic wavefunction. Write it in amplitude-phase form:</p>
+
+<div class="eq">
+  ψ(r,t) = √n(r,t) · e<sup>iφ(r,t)</sup>
+  <span class="label">(2)</span>
+</div>
+
+<p>Here <em>n</em> is the density and <em>φ</em> is the phase. Because polaritons are pumped by a laser and leak out of the cavity, the dynamics are driven and dissipative. The standard equation is</p>
+
+<div class="eq">
+  iħ ∂ψ/∂t = [ −(ħ²/2m<sup>*</sup>)∇² + V(r) + g|ψ|² + (iħ/2)(R·n<sub>R</sub> − γ) ] ψ
+  <span class="label">(3)</span>
+</div>
+
+<ul>
+  <li><em>g</em> is the polariton-polariton interaction strength. It is repulsive and is what makes the condensate stiff.</li>
+  <li><em>V(r)</em> is an external potential, which in the experiment is set by the cavity structure and the electrically tunable liquid crystal.</li>
+  <li><em>R·n<sub>R</sub></em> is gain from the pump and reservoir. <em>γ</em> is loss. A steady state needs gain and loss to balance.</li>
+</ul>
+
+<p>In the absence of gain and loss, eq. (3) conserves total particle number, which gives the continuity equation below.</p>
+
+<div class="eq">
+  ∂n/∂t + ∇·(n v) = 0, &nbsp;&nbsp; v = (ħ/m<sup>*</sup>) ∇φ
+  <span class="label">(4)</span>
+</div>
+
+<p>The superfluid velocity is the phase gradient. This is the first clue for superfluidity: flow is encoded entirely in how the phase varies in space.</p>
+
+<h2>3. Superfluidity: frictionless flow</h2>
+
+<h3>3a. Bogoliubov excitations and the critical velocity</h3>
+
+<p>Linearize eq. (3) around a uniform condensate of density <em>n₀</em> and let <em>ε<sub>p</sub></em> = p²/2m*. The collective excitations have the Bogoliubov dispersion</p>
+
+<div class="eq">
+  E(p) = √( ε<sub>p</sub> (ε<sub>p</sub> + 2g n₀) )
+  <span class="label">(5)</span>
+</div>
+
+<p>For small momenta, E(p) ≈ c·p with sound speed c = √(g n₀ / m*). Landau's criterion says a fluid moving at speed v cannot lose energy to excitations unless some excitation can be created with E(p) < p·v. The fluid therefore flows without friction as long as its speed stays below</p>
+
+<div class="eq">
+  v<sub>c</sub> = min<sub>p</sub> [ E(p)/p ] = √( g n₀ / m<sup>*</sup> )
+  <span class="label">(6)</span>
+</div>
+
+<p>This is the mathematical version of the article's oar analogy. Below <em>v<sub>c</sub></em>, the oar meets no resistance. Above it, quantum vortices nucleate. The interactive plot in section 6 shows E(p)/p and its minimum.</p>
+
+<h3>3b. Quantized vortices</h3>
+
+<p>Because ψ must be single-valued, circulation around a closed loop is quantized:</p>
+
+<div class="eq">
+  ∮ v · dl = (h / m<sup>*</sup>) · N, &nbsp; N ∈ ℤ
+  <span class="label">(7)</span>
+</div>
+
+<p>Vortices are the topological defects that let a superfluid respond to rotation or to an oar above threshold, which is exactly what the article describes.</p>
+
+<h2>4. The supersolid: density wave plus superflow</h2>
+
+<p>Now allow the density to be periodic. A minimal ansatz with a density modulation of wavenumber <em>K</em> and relative amplitude <em>ε</em> is</p>
+
+<div class="eq">
+  n(x) = n̄ [ 1 + ε cos(Kx − θ) ], &nbsp; φ(x) = const. &nbsp;(superflow still allowed)
+  <span class="label">(8)</span>
+</div>
+
+<p>The modulation's period is Λ = 2π/K. The superfluid has to carry flow while also having a periodic density, and these two things compete. A supersolid exists when a sizable fraction of the condensate still moves without friction despite the crystal-like modulation. Quantitatively, one writes the superfluid fraction ρ<sub>s</sub>/ρ, which is strictly between 0 and 1 in a supersolid.</p>
+
+<h3>4a. Spontaneous symmetry breaking</h3>
+
+<p>The energy functional is invariant under a continuous translation of the whole pattern, because nothing in the Hamiltonian picks out where the fringes sit. Mathematically, the free parameter <em>θ</em> in eq. (8) can take any value in [0, 2π). Every choice gives the same energy:</p>
+
+<div class="eq">
+  E[n(x); θ] = E[n(x); θ + α] &nbsp;for all α ∈ ℝ &nbsp; ⇒ &nbsp; a continuous family of degenerate ground states
+  <span class="label">(9)</span>
+</div>
+
+<p>The system spontaneously picks one θ. This is spontaneous breaking of continuous translation symmetry, the defining property of a crystal. Each pulse of the laser starts a new realization, and the fringes land at a new position:</p>
+
+<div class="eq">
+  Δx = Δθ / K = (Λ / 2π) · Δθ
+  <span class="label">(10)</span>
+</div>
+
+<p>This is the article's "bright fringes appear in a different position each time." The measured fringe shift is a direct readout of the random choice of θ.</p>
+
+<h2>5. Persistent spin helix and polarization</h2>
+
+<h3>5a. Two-component (spin) description</h3>
+
+<p>Polaritons carry a pseudospin given by their circular polarization, so the condensate has two components: ψ<sub>↑</sub> (right circular) and ψ<sub>↓</sub> (left circular). The polarization of the emitted light is described by the Stokes parameters:</p>
+
+<div class="eq">
+  S<sub>0</sub> = |ψ<sub>↑</sub>|² + |ψ<sub>↓</sub>|², &nbsp;
+  S<sub>1</sub> = |ψ<sub>↑</sub>|² − |ψ<sub>↓</sub>|², &nbsp;
+  S<sub>2</sub> = 2 Re(ψ<sub>↑</sub>* ψ<sub>↓</sub>), &nbsp;
+  S<sub>3</sub> = 2 Im(ψ<sub>↑</sub>* ψ<sub>↓</sub>)
+  <span class="label">(11)</span>
+</div>
+
+<p>S<sub>0</sub> is the intensity. The polarization orientation is set by (S<sub>1</sub>, S<sub>2</sub>), and the linear polarization angle is α = ½ arctan(S<sub>2</sub>/S<sub>1</sub>).</p>
+
+<h3>5b. Spin-orbit coupling and the helix</h3>
+
+<p>In a microcavity with a liquid crystal layer, the TE and TM photon modes split. The effective spin-orbit Hamiltonian for the polariton pseudospin is a momentum-dependent effective magnetic field Ω(k):</p>
+
+<div class="eq">
+  H<sub>SO</sub> = ½ Ω(k) · σ, &nbsp; Ω(k) = (β<sub>x</sub>k<sub>x</sub>, β<sub>y</sub>k<sub>y</sub>) (schematically)
+  <span class="label">(12)</span>
+</div>
+
+<p>When the two spin-orbit strengths are equal, the spin precesses as one moves along a line. The spin texture is then a helix, with the pseudospin angle winding linearly:</p>
+
+<div class="eq">
+  φ<sub>s</sub>(x) = Q x + φ<sub>0</sub>, &nbsp; Q ∝ m<sup>*</sup>β / ħ²
+  <span class="label">(13)</span>
+</div>
+
+<p>The linear polarization angle therefore rotates with x, and S<sub>1</sub>, S<sub>2</sub> oscillate as cos(Qx), sin(Qx). This is the article's "persistent spin helix": the polarization pattern is periodic in space and, in the ideal model, does not decay along the helix.</p>
+
+<h3>5c. Why two orders coexist</h3>
+
+<p>Eq. (8) gives the intensity order (fringes in S<sub>0</sub>). Eq. (13) gives the polarization order (a rotating angle in S<sub>1</sub>, S<sub>2</sub>). The supersolid signature is that both appear in the same state, which is why the paper reports "two different forms of order occurring at the same time."</p>
+
+<h2>6. Interactive diagrams</h2>
+
+<div class="card">
+  <h3 style="margin-top:0">Diagram A. Density modulation and fringe shift (eq. 8, 10)</h3>
+  <p class="cap">The blue curve is the condensate density n(x)/n̄. Drag θ to see the fringes move; each θ is an equally valid ground state (eq. 9). Drag ε to change the modulation depth.</p>
+  <canvas id="densityCanvas" width="800" height="300"></canvas>
+  <div class="controls">
+    <label>θ (phase) = <span id="thetaVal">0.00</span> rad
+      <input type="range" id="theta" min="0" max="6.2832" step="0.01" value="0"></label>
+    <label>ε (modulation depth) = <span id="epsVal">0.40</span>
+      <input type="range" id="eps" min="0" max="0.9" step="0.01" value="0.40"></label>
+  </div>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h3 style="margin-top:0">Diagram B. Bogoliubov critical velocity (eq. 5, 6)</h3>
+    <p class="cap">Plot of E(p)/p in units of c = √(gn₀/m*), with g n₀ = 1, m* = 1. The minimum sits at p → 0 and equals v<sub>c</sub>. Move the slider to change the interaction energy g n₀ and watch v<sub>c</sub> = √(gn₀/m*) rise.</p>
+    <canvas id="dispCanvas" width="400" height="260"></canvas>
+    <div class="controls">
+      <label>g n₀ = <span id="gnVal">1.00</span>
+        <input type="range" id="gn" min="0.2" max="3" step="0.05" value="1"></label>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Diagram C. Persistent spin helix (eq. 11, 13)</h3>
+    <p class="cap">Linear polarization angle α(x) = ½ arctan(S₂/S₁), with the spin angle φ<sub>s</sub>(x) = Qx. Drag Q to change the helix pitch.</p>
+    <canvas id="helixCanvas" width="400" height="260"></canvas>
+    <div class="controls">
+      <label>Q (helix wavenumber) = <span id="qVal">1.00</span>
+        <input type="range" id="q" min="0.2" max="3" step="0.05" value="1"></label>
+    </div>
+  </div>
+</div>
+
+<h2>7. Putting numbers to the experiment</h2>
+
+<table>
+  <tr><th>Quantity</th><th>Value (from article or derived)</th><th>Meaning</th></tr>
+  <tr><td>Operating temperature</td><td>≈ 60 °C = 333 K; k<sub>B</sub>T ≈ 28.7 meV</td><td>Room-temperature operation; far above cold-atom regimes (nK).</td></tr>
+  <tr><td>Polariton lifetime</td><td>few ps; ħ/τ ≈ 0.66 meV</td><td>Dissipation, hence the need for the gain term in eq. (3).</td></tr>
+  <tr><td>Polariton mass</td><td>m* ≈ 10<sup>−5</sup>–10<sup>−4</sup> m<sub>e</sub></td><td>Makes T<sub>c</sub> ∝ n/m* large enough for room-temperature condensation.</td></tr>
+  <tr><td>Critical velocity</td><td>v<sub>c</sub> = √(g n₀ / m*)</td><td>Upper bound for frictionless flow (eq. 6).</td></tr>
+  <tr><td>Fringe shift</td><td>Δx = (Λ/2π) Δθ</td><td>Spontaneous selection of θ, seen as shot-to-shot position change.</td></tr>
+  <tr><td>Operating voltage</td><td>Tunes liquid crystal birefringence</td><td>Electrical control of V(r) and spin-orbit terms in the model.</td></tr>
+</table>
+
+<div class="note">
+  <strong>Caveats.</strong> The equations above are simplified models. The real experiment includes disorder, a finite reservoir, and cavity-specific spin-orbit terms, and the expressions here are schematic where marked (e.g., eq. 12 and the proportionality in eq. 13). The article itself describes the applications to optical neuromorphic computing and sensing as possibilities for future research, not demonstrated results.
+</div>
+
+</main>
+
+<script>
+(function () {
+  const css = getComputedStyle(document.documentElement);
+  const fg = () => getComputedStyle(document.body).color;
+  const muted = "#8a8a93", accent = "#2b6cb0", accent2 = "#c05621", line = "#e4e1da";
+
+  function setup(id) {
+    const c = document.getElementById(id);
+    const ctx = c.getContext("2d");
+    return { c, ctx, w: c.width, h: c.height };
+  }
+  function axes(ctx, w, h, pad) {
+    ctx.strokeStyle = muted; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad, h - pad); ctx.lineTo(w - pad / 2, h - pad);
+    ctx.moveTo(pad, h - pad); ctx.lineTo(pad, pad / 2);
+    ctx.stroke();
+  }
+
+  // ---------- Diagram A: density ----------
+  const dA = setup("densityCanvas");
+  const thetaS = document.getElementById("theta");
+  const epsS = document.getElementById("eps");
+  function drawDensity() {
+    const { ctx, w, h } = dA;
+    const theta = parseFloat(thetaS.value), eps = parseFloat(epsS.value);
+    document.getElementById("thetaVal").textContent = theta.toFixed(2);
+    document.getElementById("epsVal").textContent = eps.toFixed(2);
+    ctx.clearRect(0, 0, w, h);
+    const pad = 40, top = 20, bot = h - 36;
+    const K = 2 * Math.PI / 1.0; // one period per unit length
+    const xmax = 3; // show 3 periods
+    const X = x => pad + (x / xmax) * (w - pad - 20);
+    const Y = n => bot - (n / 2.0) * (bot - top); // n in [0, 2]
+    // fringe guides
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = line;
+    for (let k = 0; k <= xmax; k++) {
+      ctx.beginPath(); ctx.moveTo(X(k), top); ctx.lineTo(X(k), bot); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    // mean line
+    ctx.strokeStyle = muted; ctx.setLineDash([2, 3]);
+    ctx.beginPath(); ctx.moveTo(pad, Y(1)); ctx.lineTo(w - 20, Y(1)); ctx.stroke();
+    ctx.setLineDash([]);
+    // density
+    ctx.strokeStyle = accent; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let i = 0; i <= 400; i++) {
+      const x = (i / 400) * xmax;
+      const n = 1 + eps * Math.cos(K * x - theta);
+      const px = X(x), py = Y(n);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // emission bright fringes: peaks of n
+    ctx.fillStyle = accent2;
+    for (let k = 0; k < xmax; k++) {
+      const xpk = (theta / K + k) ;
+      for (let m = -1; m <= xmax; m++) {
+        const x = (theta + 2 * Math.PI * m) / K;
+        if (x >= 0 && x <= xmax) { ctx.beginPath(); ctx.arc(X(x), Y(1 + eps), 4, 0, 2 * Math.PI); ctx.fill(); }
+      }
+      break;
+    }
+    axes(ctx, w, h, pad);
+    ctx.fillStyle = muted; ctx.font = "13px system-ui, sans-serif";
+    ctx.fillText("n(x)/n̄", 4, top + 8);
+    ctx.fillText("x  (in units of Λ)", w - 150, h - 8);
+    ctx.fillStyle = accent2; ctx.fillText("bright fringe (max density)", pad + 8, top + 14);
+  }
+  thetaS.addEventListener("input", drawDensity);
+  epsS.addEventListener("input", drawDensity);
+  drawDensity();
+
+  // ---------- Diagram B: dispersion ----------
+  const dB = setup("dispCanvas");
+  const gnS = document.getElementById("gn");
+  function drawDisp() {
+    const { ctx, w, h } = dB;
+    const gn = parseFloat(gnS.value);
+    document.getElementById("gnVal").textContent = gn.toFixed(2);
+    ctx.clearRect(0, 0, w, h);
+    const pad = 44, top = 16, bot = h - 36;
+    const pmax = 3;
+    const X = p => pad + (p / pmax) * (w - pad - 16);
+    const ymax = 2.5;
+    const Y = v => bot - (v / ymax) * (bot - top);
+    const m = 1;
+    const vc = Math.sqrt(gn / m);
+    // E(p)/p curve
+    ctx.strokeStyle = accent; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let i = 1; i <= 300; i++) {
+      const p = (i / 300) * pmax;
+      const eps_p = p * p / (2 * m);
+      const E = Math.sqrt(eps_p * (eps_p + 2 * gn));
+      const v = E / p;
+      const px = X(p), py = Y(Math.min(v, ymax));
+      i === 1 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // critical velocity line
+    ctx.setLineDash([6, 4]); ctx.strokeStyle = accent2;
+    ctx.beginPath(); ctx.moveTo(pad, Y(vc)); ctx.lineTo(w - 16, Y(vc)); ctx.stroke();
+    ctx.setLineDash([]);
+    axes(ctx, w, h, pad);
+    ctx.fillStyle = muted; ctx.font = "13px system-ui, sans-serif";
+    ctx.fillText("E(p)/p", 6, top + 8);
+    ctx.fillText("momentum p", w - 110, h - 8);
+    ctx.fillStyle = accent2;
+    ctx.fillText("v_c = " + vc.toFixed(2), w - 110, Y(vc) - 6);
+  }
+  gnS.addEventListener("input", drawDisp);
+  drawDisp();
+
+  // ---------- Diagram C: helix ----------
+  const dC = setup("helixCanvas");
+  const qS = document.getElementById("q");
+  function drawHelix() {
+    const { ctx, w, h } = dC;
+    const Q = parseFloat(qS.value);
+    document.getElementById("qVal").textContent = Q.toFixed(2);
+    ctx.clearRect(0, 0, w, h);
+    const pad = 40, top = 16, bot = h - 36;
+    const xmax = 10;
+    const X = x => pad + (x / xmax) * (w - pad - 16);
+    const Y = a => (bot + top) / 2 - a * ((bot - top) / 2) / (Math.PI / 2 * 1.1);
+    // polarization angle alpha = Q x / 2 (wrapped to (-pi/2, pi/2])
+    ctx.strokeStyle = accent; ctx.lineWidth = 2.5; ctx.beginPath();
+    for (let i = 0; i <= 500; i++) {
+      const x = (i / 500) * xmax;
+      let a = (Q * x) / 2;
+      a = Math.atan2(Math.sin(a), Math.cos(a)); // wrap
+      const px = X(x), py = Y(a);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // S1, S2 traces
+    ctx.strokeStyle = accent2; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    for (let i = 0; i <= 500; i++) {
+      const x = (i / 500) * xmax;
+      const s2 = Math.sin(Q * x);
+      const px = X(x), py = Y(s2 * 1.0);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    axes(ctx, w, h, pad);
+    ctx.fillStyle = muted; ctx.font = "13px system-ui, sans-serif";
+    ctx.fillText("α(x) (solid), S₂ (dashed)", pad + 6, top + 10);
+    ctx.fillText("x", w - 20, h - 8);
+  }
+  qS.addEventListener("input", drawHelix);
+  drawHelix();
+})();
+</script>
+</body>
+</html>
